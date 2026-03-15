@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "339266720439",
+    "project_id": "ldfews",
+    "storage_bucket": "ldfews.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339266720439:android:8670742431fe7d486a7332",
+        "android_client_info": {
+          "package_name": "com.example.floodapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTZGlTuwYv8nKj4rveWjXJtfwNJQ4CBWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339266720439:android:a67891eaeb9bdea16a7332",
+        "android_client_info": {
+          "package_name": "com.example.ldfews"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTZGlTuwYv8nKj4rveWjXJtfwNJQ4CBWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
