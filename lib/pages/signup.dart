@@ -101,7 +101,7 @@ class _SignUpPageState extends State<SignUpPage>{
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Join FloodGuard",
+                          "Join LDFEWS",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
