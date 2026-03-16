@@ -42,7 +42,7 @@ final TextEditingController passwordController = TextEditingController();
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.water_drop,
+                          Icons.waves,
                           size: 48,
                           color: Color.fromARGB(255, 2, 62, 138),
                         ),
@@ -92,11 +92,6 @@ final TextEditingController passwordController = TextEditingController();
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.radar,
-                        size: 14,
-                        color: Colors.grey.shade400,
-                      ),
                       const SizedBox(width: 6),
                       Text(
                         "Locally Design Flood Early Warning System",
