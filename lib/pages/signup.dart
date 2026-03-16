@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 
 
 class SignUpPage extends StatefulWidget {
@@ -19,6 +20,10 @@ class _SignUpPageState extends State<SignUpPage>{
   int passwordStrength = 0;
   String strengthText = "Weak";
   Color strengthColor = Colors.red;
+  int verifyButtonCount = 60;
+  bool isVerifyButtonPressed = false;
+  Timer?timer;
+  bool isTimerRunning = false;
   
 
   final TextEditingController emailController = TextEditingController();
@@ -27,6 +32,12 @@ class _SignUpPageState extends State<SignUpPage>{
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
+
+  bool emailFormatValidityChecker(String email){
+    return RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    ).hasMatch(email);
+  }
   void checkPasswordStrength(String password){
     int strength = 0;
 
@@ -194,8 +205,7 @@ class _SignUpPageState extends State<SignUpPage>{
                       ),
                       
                       const SizedBox(height: 16),
-                      
-                      // Email Field
+                      // E-mail Verification
                       TextField(
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -203,24 +213,32 @@ class _SignUpPageState extends State<SignUpPage>{
                           labelText: "Email Address",
                           labelStyle: const TextStyle(color: Colors.grey),
                           hintText: "Enter your email",
-                          prefixIcon: const Icon(Icons.email_outlined, color: Colors.grey, size: 20),
+                          prefixIcon: const Icon(
+                            Icons.email_outlined,
+                            color: Colors.grey,
+                            size: 20,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade50,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 12,
+                          ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              color: const Color.fromARGB(255, 2, 62, 138).withOpacity(0.3),
+                              color: const Color.fromARGB(255, 2, 62, 138)
+                                  .withOpacity(0.3),
                               width: 1,
                             ),
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 16),
                       
                       // Phone Number Field
@@ -493,14 +511,14 @@ class _SignUpPageState extends State<SignUpPage>{
                             }
 
                             try {
-                              // 1️⃣ Create user in Firebase Auth
+                              // 1️Create user in Firebase Auth
                               print('Signup: starting createUserWithEmailAndPassword for $email');
                               UserCredential userCredential = await FirebaseAuth.instance
                                   .createUserWithEmailAndPassword(email: email, password: pass);
                               print('Signup: user created with uid: ${userCredential.user?.uid}');
 
-                              // 2️⃣ Save additional user info in Firestore
-                              await FirebaseFirestore.instance
+                              //  Save additional user info in Firestore
+                              await FirebaseFirestore.instance        
                                   .collection('users')
                                   .doc(userCredential.user!.uid)
                                   .set({
@@ -511,16 +529,119 @@ class _SignUpPageState extends State<SignUpPage>{
                               });
                               print('Signup: user document written to Firestore');
 
+                              try{
+                                await userCredential.user!.sendEmailVerification();
+                               showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    title: const Column(
+                                      children: [
+                                        Icon(
+                                          Icons.mark_email_read,
+                                          size: 48,
+                                          color: Color.fromARGB(255, 2, 62, 138),
+                                        ),
+                                        SizedBox(height: 12),
+                                        Text(
+                                          "Verify Your Email",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color.fromARGB(255, 2, 62, 138),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          "A verification email has been sent to:",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100,
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
+                                          child: Text(
+                                            FirebaseAuth.instance.currentUser?.email ?? "",
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color.fromARGB(255, 2, 62, 138),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        const Text(
+                                          "Please check your inbox and verify your email before logging in.",
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.black87,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () async {
+                                          await FirebaseAuth.instance.currentUser!
+                                              .sendEmailVerification();
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: const Text("Verification email resent!"),
+                                              behavior: SnackBarBehavior.floating,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: const Color.fromARGB(255, 2, 62, 138),
+                                        ),
+                                        child: const Text("Resend"),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          Navigator.pop(context);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromARGB(255, 2, 62, 138),
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        child: const Text("OK"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }catch (e) {
+                              print("Failed to send verification email: $e");
+                            }
+                               
+
                               // Success
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: const Text("Account created successfully!"), backgroundColor: Colors.green.shade600),
                               );
-
-                              // Navigate back or to home
-                              Future.delayed(const Duration(seconds: 2), () {
-                                Navigator.pop(context); // Or replace with home page navigation
-                              });
-
                             } on FirebaseAuthException catch (e) {
                               // Detailed logging for Firebase auth errors
                               print('FirebaseAuthException during signup');
