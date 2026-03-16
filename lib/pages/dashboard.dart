@@ -1,7 +1,4 @@
-// Flood Monitoring Dashboard UI
-// Flutter Screen Example
-// Connect this to Firebase + Live Video Stream later
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -28,10 +25,11 @@ class DashboardPage extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             const Text(
-              "FloodGuard Dashboard",
+              "LDFEWS Dashboard",
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 18,
+                color: Colors.white,
               ),
             ),
           ],
@@ -47,7 +45,7 @@ class DashboardPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
             ),
             child: IconButton(
-              icon: const Icon(Icons.notifications_none, color: Colors.white),
+              icon: const Icon(Icons.notifications_none, color: Colors.white, size: 20),
               onPressed: () {
                 // Show notifications
               },
@@ -60,7 +58,7 @@ class DashboardPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
             ),
             child: IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white, size: 22),
+              icon: const Icon(Icons.logout, color: Colors.white, size: 20),
               onPressed: () {
                 // Add Firebase logout here
                 showDialog(
@@ -73,14 +71,11 @@ class DashboardPage extends StatelessWidget {
                         onPressed: () => Navigator.pop(context),
                         child: const Text("Cancel"),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
+                      TextButton(
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
                           Navigator.pop(context);
-                          // Add logout logic
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 2, 62, 138),
-                        ),
                         child: const Text("Logout"),
                       ),
                     ],
