@@ -1,6 +1,6 @@
 {
-    "name": "ldfews",
-    "short_name": "ldfews",
+    "name": "Locally Design Flood Early Warning System",
+    "short_name": ":DFEWS",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
