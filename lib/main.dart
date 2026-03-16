@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';             
 
 import 'package:ldfews/firebase_options.dart';           
 import 'pages/login.dart';
+import 'pages/dashboard.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +25,32 @@ class FloodApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Roboto',
       ),
-      home: const LoginPage(),
+      home: const AuthCheck(),
+    );
+  }
+}
+
+class AuthCheck extends StatelessWidget {
+  const AuthCheck({super.key});
+
+  @override
+  Widget build(BuildContext context){
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting){
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (snapshot.hasData){
+          return const DashboardPage();
+        }else{
+          return const LoginPage();
+        }
+      },
     );
   }
 }
