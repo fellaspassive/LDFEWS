@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ldfews/pages/profile.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -45,9 +46,14 @@ class DashboardPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
             ),
             child: IconButton(
-              icon: const Icon(Icons.notifications_none, color: Colors.white, size: 20),
+              icon: const Icon(Icons.person, color: Colors.white, size: 25),
               onPressed: () {
-                // Show notifications
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfilePage(),
+                  ),
+                );
               },
             ),
           ),
